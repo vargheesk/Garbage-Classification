@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.keras
+# Note: Keeping the model might be intentional if it's small, 
+# but usually large models are ignored. 
+# Uncomment the above line if you want to exclude the model file.
