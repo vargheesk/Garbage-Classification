@@ -270,8 +270,28 @@ if st.session_state['page'] == 'Home':
                 <div style="background-color: #e3f2fd; padding: 25px; border-radius: 10px; border: 2px solid #2196F3; text-align: center;">
                     <h5 style="color: #1565C0; margin:0; text-transform: uppercase; letter-spacing: 1px;">Detected Category</h5>
                     <h1 style="color: #0D47A1; margin: 10px 0; font-size: 3rem;">{st.session_state['last_pred']}</h1>
+                    <p style="color: #424242; margin:0;">Confidence: <b>{st.session_state['last_conf']:.2f}%</b></p>
                 </div>
                 """, unsafe_allow_html=True)
+            
+             st.write("---")
+             st.subheader("📊 Confidence Breakdown")
+             
+             # Create a dataframe for the probabilities
+             import pandas as pd
+             probs = st.session_state['last_probs']
+             class_names = [CLASSES[i] for i in range(12)]
+             df_probs = pd.DataFrame({
+                 "Category": class_names,
+                 "Probability": probs
+             }).sort_values(by="Probability", ascending=False)
+             
+             st.bar_chart(df_probs.set_index("Category"))
+             
+             with st.expander("See Top 3 Probabilities"):
+                 for i in range(3):
+                     row = df_probs.iloc[i]
+                     st.write(f"**{i+1}. {row['Category']}**: {row['Probability']*100:.2f}%")
 
 
 elif st.session_state['page'] == 'Methodology':
