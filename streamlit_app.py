@@ -135,12 +135,35 @@ CLASSES = {
 def load_classification_model():
     """Loads the pre-trained Keras model by reconstructing architecture and loading weights."""
     try:
-        # Load the model directly (this is safer and includes architecture + weights)
-        model = tf.keras.models.load_model('Grabage_model.keras', compile=False)
+        # Reconstruct the model architecture (Safer for crossing Keras versions)
+        base_model = tf.keras.applications.VGG16(
+            include_top=False, 
+            weights='imagenet', 
+            input_shape=(224, 224, 3)
+        )
+        base_model.trainable = False
+        
+        model = tf.keras.Sequential([
+            base_model,
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(128, activation='relu'),
+            tf.keras.layers.Dense(12, activation='softmax')
+        ])
+        
+        # Load weights from the saved model file
+        # Using by_name=True or skip_mismatch=True can help if there are minor differences, 
+        # but standard load_weights is usually fine for full model files too.
+        model.load_weights('Grabage_model.keras')
+
         return model
     except Exception as e:
         st.error(f"Error loading model: {e}")
-        return None
+        # Final fallback if weights fail
+        try:
+             model = tf.keras.models.load_model('Grabage_model.keras', compile=False)
+             return model
+        except:
+             return None
 
 def preprocess_image(image):
     """Resizes and rescales the image for the model."""
